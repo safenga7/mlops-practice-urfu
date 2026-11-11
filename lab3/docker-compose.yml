@@ -1,0 +1,15 @@
+services:
+  ml-service:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: lab3-ml-service:latest
+    container_name: lab3-ml-service
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
