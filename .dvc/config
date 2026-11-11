@@ -1,0 +1,5 @@
+[core]
+    analytics = false
+    remote = local_remote
+['remote "local_remote"']
+    url = /Users/ahmed/.dvc_storage/mlops_practice
