@@ -1,5 +1,42 @@
+# IDE and editor files
 .idea
 target
 *.iml
 **/*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment & Virtualenvs
 **/.env
+.venv/
+venv/
+env/
+ENV/
+
+# Python caches and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Testing & Notebook checkpoints
+.pytest_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Generated ML model artifacts & scalers (reproducible via pipelines)
+*.pkl
+*.pickle
+
+# Generated datasets and intermediate pipeline outputs
+lab1/train/
+lab1/test/
+lab2/data/

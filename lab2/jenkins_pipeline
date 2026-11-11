@@ -1,10 +1,54 @@
 pipeline {
     agent any
+
     stages {
-     stage('Hello') {
-                steps {
-                    echo 'Hello world'
+        stage('Install dependencies') {
+            steps {
+                dir('lab2') {
+                    sh 'pip3 install --quiet -r requirements.txt'
                 }
             }
-     }
+        }
+
+        stage('Data acquisition') {
+            steps {
+                dir('lab2') {
+                    sh 'python3 data_acquisition.py'
+                }
+            }
+        }
+
+        stage('Preprocessing & split') {
+            steps {
+                dir('lab2') {
+                    sh 'python3 data_preprocessing.py'
+                }
+            }
+        }
+
+        stage('Model training') {
+            steps {
+                dir('lab2') {
+                    sh 'python3 model_training.py'
+                }
+            }
+        }
+
+        stage('Model evaluation') {
+            steps {
+                dir('lab2') {
+                    sh 'python3 model_evaluation.py'
+                }
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo 'Конвейер завершился с ошибкой. Проверьте логи выше.'
+        }
+        success {
+            echo 'Конвейер выполнен успешно.'
+        }
+    }
 }
