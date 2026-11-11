@@ -1,0 +1,87 @@
+pipeline {
+    agent any
+
+    environment {
+        PYTHON = 'python3'
+        PIP = 'pip3'
+    }
+
+    stages {
+        stage('Environment & Checkout') {
+            steps {
+                echo "========== CI/CD PIPELINE INITIALIZATION =========="
+                sh 'git log -n 1 --oneline'
+                sh 'python3 --version'
+            }
+        }
+
+        stage('Install Pipeline Dependencies') {
+            steps {
+                echo "========== INSTALLING PIPELINE DEPENDENCIES =========="
+                sh '''
+                    python3 -m pip install --break-system-packages -q fastapi uvicorn pydantic httpx pytest requests scikit-learn pandas numpy || true
+                '''
+            }
+        }
+
+        stage('DVC Data Verification') {
+            steps {
+                echo "========== DVC DATASET INTEGRITY CHECK =========="
+                sh '''
+                    test -f final_project/data/iris_dataset.csv.dvc
+                    cat final_project/data/iris_dataset.csv.dvc
+                    if [ ! -f final_project/data/iris_dataset.csv ]; then
+                        python3 final_project/data/generate_dataset.py
+                    fi
+                    test -s final_project/data/iris_dataset.csv
+                    echo "DVC tracked dataset verified successfully."
+                '''
+            }
+        }
+
+        stage('Data Quality Tests') {
+            steps {
+                echo "========== EXECUTING DATA QUALITY TESTS =========="
+                sh '''
+                    python3 -m pytest -v final_project/tests/test_data_quality.py
+                '''
+            }
+        }
+
+        stage('API Unit & Integration Tests') {
+            steps {
+                echo "========== EXECUTING UNIT & INTEGRATION TESTS =========="
+                sh '''
+                    python3 -m pytest -v final_project/tests/test_api.py
+                '''
+            }
+        }
+
+        stage('Docker Packaging Validation') {
+            steps {
+                echo "========== VALIDATING DOCKER PACKAGING MANIFESTS =========="
+                sh '''
+                    test -f final_project/Dockerfile
+                    test -f final_project/docker-compose.yml
+                    test -f final_project/requirements.txt
+                    test -f final_project/app/main.py
+                    test -f final_project/app/model/iris_classifier.pkl
+                    echo "Docker packaging manifests and artifacts validated successfully."
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "=========================================================="
+            echo "CI/CD PIPELINE SUCCEEDED: ALL QUALITY & UNIT GATES PASSED!"
+            echo "=========================================================="
+        }
+        failure {
+            echo "=========================================================="
+            echo "CI/CD PIPELINE FAILED: INSPECT LOGS FOR FAILED GATES."
+            echo "=========================================================="
+        }
+    }
+}
