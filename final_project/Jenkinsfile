@@ -43,7 +43,7 @@ pipeline {
             steps {
                 echo "========== EXECUTING DATA QUALITY TESTS =========="
                 sh '''
-                    python3 -m pytest -v final_project/tests/test_data_quality.py
+                    python3 -m pytest -v -o cache_dir=/tmp/.pytest_cache final_project/tests/test_data_quality.py
                 '''
             }
         }
@@ -52,7 +52,7 @@ pipeline {
             steps {
                 echo "========== EXECUTING UNIT & INTEGRATION TESTS =========="
                 sh '''
-                    python3 -m pytest -v final_project/tests/test_api.py
+                    python3 -m pytest -v -o cache_dir=/tmp/.pytest_cache final_project/tests/test_api.py
                 '''
             }
         }
