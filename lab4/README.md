@@ -43,18 +43,64 @@ lab4/
    dvc config core.analytics false
    ```
 
-2. **Настройка постоянного удаленного хранилища**:
-   Использовано выделенное постоянное локальное хранилище вне рабочей директории репозитория:
+2. **Настройка удаленных хранилищ (Portable Storage & Local Backup)**:
+   Для гарантированной воспроизводимости проекта при клонировании репозитория настроено встроенное переносимое хранилище `portable_remote`, а персональный путь к хосту вынесен в локальный конфигурационный файл `.dvc/config.local` (игнорируемый Git):
+   
+   * **Основной переносимый репозиторий (`.dvc/config`, зафиксирован в Git)**:
+     ```ini
+     [core]
+         analytics = false
+         remote = portable_remote
+     ['remote "portable_remote"']
+         url = ../dvc_storage
+     ```
+   * **Локальный разработческий бэкап (`.dvc/config.local`, не попадает в Git)**:
+     ```ini
+     ['remote "local_remote"']
+         url = /Users/ahmed/.dvc_storage/mlops_practice
+     ```
+
+---
+
+## 3.1. Инструкция по воспроизведению версий данных для проверяющего
+
+После клонирования репозитория все версии данных восстанавливаются локально без необходимости внешних учетных записей или доступа в облако:
+
+1. **Восстановление текущей версии данных (`v3.0`)**:
    ```bash
-   dvc remote add -d local_remote /Users/ahmed/.dvc_storage/mlops_practice
+   dvc pull
    ```
-   Конфигурация сохранена в `.dvc/config`:
-   ```ini
-   [core]
-       analytics = false
-       remote = local_remote
-   ['remote "local_remote"']
-       url = /Users/ahmed/.dvc_storage/mlops_practice
+   DVC автоматически извлечет `lab4/data/titanic.csv` и `final_project/data/iris_dataset.csv` из встроенного хранилища `dvc_storage/`.
+
+2. **Переключение на исторические версии данных (`v1.0`, `v2.0`, `v3.0`)**:
+   Для переключения между историческими тегами Git рекомендуется один раз наполнить локальный кэш DVC из встроенного хранилища:
+   ```bash
+   mkdir -p .dvc/cache
+   cp -R dvc_storage/files .dvc/cache/
+   ```
+   После этого переключение между версиями осуществляется стандартными командами:
+   * **Версия 1** (`v1.0`):
+     ```bash
+     git checkout v1.0
+     dvc checkout
+     ```
+   * **Версия 2** (`v2.0`):
+     ```bash
+     git checkout v2.0
+     dvc checkout
+     ```
+   * **Версия 3** (`v3.0`):
+     ```bash
+     git checkout v3.0
+     dvc checkout
+     ```
+
+3. **Альтернативное детерминированное воспроизведение без DVC**:
+   Скрипт `lab4/prepare_dataset.py` позволяет напрямую сгенерировать идентичный байт-в-байт датасет для любой версии:
+   ```bash
+   python3 lab4/prepare_dataset.py --version 1
+   python3 lab4/prepare_dataset.py --version 2
+   python3 lab4/prepare_dataset.py --version 3
    ```
 
 ---

@@ -52,12 +52,19 @@ mlops_practice/
 - **DVC файл**: `final_project/data/iris_dataset.csv.dvc`
 - **MD5 хеш**: `7aa5d8d3862191620f8597315bcaf81c`
 - **Размер**: 4,169 байт, 150 строк, 6 колонок
-- **Удаленное хранилище (DVC Remote)**: `/Users/ahmed/.dvc_storage/mlops_practice`
-- **Команды управления**:
+- **Удаленное хранилище по умолчанию (Portable DVC Remote)**: `dvc_storage/` (встроено в репозиторий, не требует учетных записей или доступа в интернет)
+- **Локальный бэкап-remote**: `/Users/ahmed/.dvc_storage/mlops_practice` (настроен в `.dvc/config.local`)
+- **Команды управления и воспроизведения**:
   ```bash
+  # Извлечение датасета из встроенного хранилища:
   dvc pull
-  dvc push
+
+  # Проверка статуса синхронизации:
   dvc status
+
+  # Альтернативная генерация датасета без DVC:
+  python3 final_project/data/generate_dataset.py
+  ```
   ```
 
 ---
