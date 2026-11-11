@@ -75,8 +75,10 @@ lab4/
 2. **Переключение на исторические версии данных (`v1.0`, `v2.0`, `v3.0`)**:
    Для переключения между историческими тегами Git рекомендуется один раз наполнить локальный кэш DVC из встроенного хранилища:
    ```bash
-   mkdir -p .dvc/cache
-   cp -R dvc_storage/files .dvc/cache/
+   mkdir -p .dvc/cache/files
+   rsync -a --ignore-existing dvc_storage/files/ .dvc/cache/files/
+   # Либо через cp:
+   # cp -Rf dvc_storage/files/* .dvc/cache/files/
    ```
    После этого переключение между версиями осуществляется стандартными командами:
    * **Версия 1** (`v1.0`):
