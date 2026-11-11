@@ -2,14 +2,15 @@ FROM jenkins/jenkins:lts-jdk21
 
 USER root
 
-# Install Python 3, pip, venv, git, curl
+# Install Python 3, pip, venv, git, curl, docker-cli
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         python3 \
         python3-pip \
         python3-venv \
         git \
-        curl && \
+        curl \
+        docker-cli && \
     rm -rf /var/lib/apt/lists/*
 
 # Prevent PEP 668 externally-managed-environment errors in this container
